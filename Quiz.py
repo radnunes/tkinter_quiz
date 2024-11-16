@@ -16,12 +16,36 @@ class Quiz():
         self.criar_bd()
 
     def tela_inicial(self):
+        self.root.grid_columnconfigure(0, weight=1)
+        self.root.grid_columnconfigure(1, weight=1)
+        self.root.grid_columnconfigure(2, weight=1)
+        self.root.grid_columnconfigure(3, weight=1)
+        self.root.grid_columnconfigure(4, weight=1)
+        self.root.grid_columnconfigure(5, weight=1)
+
         title_label = tk.Label(self.root, text="Bem-Vindos ao Quiz!", font=("Arial", 24))
-        title_label.pack(pady=20)
+        title_label.grid(row=0, column=1, columnspan=4, pady=20)
 
+        username_label = tk.Label(self.root, text="Nome:", font=("Arial",12))
+        username_label.grid(row=1, column=2, pady=10)
 
+        password_label = tk.Label(self.root, text="Senha:", font=("Arial", 12))
+        password_label.grid(row=2, column=2, pady=10)
 
+        username_entry = tk.Entry(self.root)
+        username_entry.grid(row=1, column=3, pady=10)
 
+        password_entry = tk.Entry(self.root)
+        password_entry.grid(row=2, column=3, pady=10)
+
+        login_button = tk.Button(self.root, text="Login", font=("Arial", 16))
+        login_button.grid(row=3, column=2, padx=10, pady=10)
+
+        guest_button = tk.Button(self.root, text="Guest", font=("Arial", 16))
+        guest_button.grid(row=3, column=3, padx=10, pady=10)
+
+        leaderboard_button = tk.Button(self.root, text="Leaderboard", font=("Arial", 16))
+        leaderboard_button.grid(row=4, column=1, columnspan=4, pady=10)
 
     def criar_bd(self):
         conn = sqlite3.connect('quiz.db')
