@@ -232,6 +232,40 @@ class Quiz():
         tk.Button(self.current_frame, text="Menu Principal", font=("Arial", 16),
                   command=self.show_login_frame).pack(pady=10)
 
+    def show_leaderboard(self):
+        self.clear_frame()
+
+        title = tk.Label(self.current_frame, text="Ranking", font=("Arial", 24))
+        title.pack(pady=20)
+
+        conn = sqlite3.connect('quiz.db')
+        cursor = conn.cursor()
+        cursor.execute('''SELECT nome, acertos, tempo 
+                         FROM resultados 
+                         ORDER BY acertos DESC, tempo ASC 
+                         LIMIT 10''')
+        results = cursor.fetchall()
+        conn.close()
+
+        # Headers
+        headers = ["Jogador", "Acertos", "Tempo (s)"]
+        header_frame = tk.Frame(self.current_frame)
+        header_frame.pack(pady=10)
+        for i, header in enumerate(headers):
+            tk.Label(header_frame, text=header, font=("Arial", 12, "bold"),
+                     width=15).grid(row=0, column=i, padx=5)
+
+        # Results
+        for i, result in enumerate(results, 1):
+            row_frame = tk.Frame(self.current_frame)
+            row_frame.pack(pady=2)
+            for j, value in enumerate(result):
+                tk.Label(row_frame, text=str(value), font=("Arial", 12),
+                         width=15).grid(row=0, column=j, padx=5)
+
+        tk.Button(self.current_frame, text="Voltar", font=("Arial", 16),
+                  command=self.show_login_frame).pack(pady=20)
+
     def criar_bd(self):
         conn = sqlite3.connect('quiz.db')
         c = conn.cursor()
