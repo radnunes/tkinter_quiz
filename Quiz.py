@@ -10,26 +10,53 @@ class Quiz():
 
     def __init__(self, root):
         self.root = root
-        self.root.title('Quiz!')  # Define o título da janela
+        self.root.title('Quiz!')
+
+        # Container principal para organizar os frames
+        self.main_container = tk.Frame(self.root)
+        self.main_container.pack(fill='both', expand=True)
+
+        # Frame para informações do usuário
+        self.user_info_frame = tk.Frame(self.main_container)
+        self.user_label = tk.Label(self.user_info_frame, text="", font=("Arial", 12))
+        self.user_label.pack(side='left', padx=10)
+        self.logout_button = tk.Button(self.user_info_frame, text="Logout", command=self.logout)
+        self.logout_button.pack(side='right', padx=10)
+
+        # Frame para o conteúdo principal
+        self.content_frame = tk.Frame(self.main_container)
+        self.content_frame.pack(fill='both', expand=True)
+
         self.current_frame = None
         self.jogador = None
-        self.questions = []  # Lista para armazenar as perguntas
-        self.current_question = 0  # Contador da pergunta atual
-        self.correct_answers = 0  # Contador de respostas corretas
-        self.start_time = None  # Hora de início do jogo
-        self.selected_difficulty = None  # Dificuldade selecionada
-        self.criar_bd()  # Criação do banco de dados
-        self.show_login_frame()  # Exibe a tela de login
+        self.questions = []
+        self.current_question = 0
+        self.correct_answers = 0
+        self.start_time = None
+        self.selected_difficulty = None
+
+        self.criar_bd()
+        self.show_login_frame()
 
     def clear_frame(self):
         """Limpa a tela atual."""
         if self.current_frame:
             self.current_frame.destroy()
-        self.current_frame = tk.Frame(self.root)
+        self.current_frame = tk.Frame(self.content_frame)
         self.current_frame.pack(fill='both', expand=True)
+
+    def update_user_info(self, username):
+        """Atualiza e mostra as informações do usuário"""
+        self.user_label.config(text=f"Usuário: {username}")
+        self.user_info_frame.pack(fill='x', before=self.content_frame)
+
+    def hide_user_info(self):
+        """Esconde as informações do usuário"""
+        self.user_info_frame.pack_forget()
 
     def show_login_frame(self):
         """Exibe a tela de login."""
+        self.hide_user_info()
         self.clear_frame()
 
         title_label = tk.Label(self.current_frame, text="Bem-Vindos ao Quiz!", font=("Arial", 24))
@@ -53,6 +80,7 @@ class Quiz():
                   command=self.play_as_guest).pack(pady=10)
         tk.Button(self.current_frame, text="Ranking", font=("Arial", 16),
                   command=self.show_leaderboard).pack(pady=10)
+
 
     def show_register_frame(self):
         """Exibe a tela de registo de nova conta."""
@@ -120,14 +148,23 @@ class Quiz():
         conn.close()
 
         if user:
-            self.jogador = Jogador(nome=username)  # Cria o jogador
+            self.jogador = Jogador(nome=username)
+            self.update_user_info(username)
             self.show_difficulty_selection()
         else:
             messagebox.showerror("Erro", "Credenciais inválidas!")
 
+    def logout(self):
+        """Realiza o logout do usuário."""
+        self.jogador = None
+        self.hide_user_info()
+        self.show_login_frame()
+        messagebox.showinfo("Logout", "Logout realizado com sucesso!")
+
     def play_as_guest(self):
         """Permite ao jogador jogar como convidado."""
-        self.jogador = Jogador()  # Cria o jogador como convidado
+        self.jogador = Jogador()
+        self.update_user_info("Convidado")
         self.show_difficulty_selection()
 
     def show_difficulty_selection(self):
@@ -137,7 +174,6 @@ class Quiz():
         title_label = tk.Label(self.current_frame, text="Selecione a Dificuldade", font=("Arial", 24))
         title_label.pack(pady=20)
 
-        # Opções de dificuldade
         difficulties = [
             ("Fácil - 10 perguntas", 10),
             ("Médio - 20 perguntas", 20),
@@ -145,10 +181,10 @@ class Quiz():
             ("Extremo - 100 perguntas", 100)
         ]
 
-        # Botões para escolher a dificuldade
         for text, num in difficulties:
             tk.Button(self.current_frame, text=text, font=("Arial", 16),
                       command=lambda n=num: self.start_game(n)).pack(pady=10)
+
 
     def start_game(self, num_questions):
         """Inicia o jogo com o número de perguntas selecionadas."""
@@ -226,6 +262,10 @@ class Quiz():
         """Exibe os resultados finais do jogo."""
         self.clear_frame()
 
+        # Garantir que o usuário permaneça logado
+        if self.jogador:
+            self.update_user_info(self.jogador.nome)
+
         title = tk.Label(self.current_frame, text="Resultados", font=("Arial", 24))
         title.pack(pady=20)
 
@@ -246,11 +286,31 @@ class Quiz():
         tk.Button(self.current_frame, text="Jogar Novamente", font=("Arial", 16),
                   command=self.show_difficulty_selection).pack(pady=10)
         tk.Button(self.current_frame, text="Menu Principal", font=("Arial", 16),
-                  command=self.show_login_frame).pack(pady=10)
+                  command=self.show_main_menu).pack(pady=10)
+
+    def show_main_menu(self):
+        """Mostra o menu principal mantendo o usuário logado."""
+        self.clear_frame()
+
+        # Garantir que o usuário permaneça logado
+        if self.jogador:
+            self.update_user_info(self.jogador.nome)
+
+        title_label = tk.Label(self.current_frame, text="Menu Principal", font=("Arial", 24))
+        title_label.pack(pady=20)
+
+        tk.Button(self.current_frame, text="Jogar", font=("Arial", 16),
+                  command=self.show_difficulty_selection).pack(pady=10)
+        tk.Button(self.current_frame, text="Ranking", font=("Arial", 16),
+                  command=self.show_leaderboard).pack(pady=10)
 
     def show_leaderboard(self):
         """Exibe o ranking dos melhores jogadores."""
         self.clear_frame()
+
+        # Garantir que o usuário permaneça logado
+        if self.jogador:
+            self.update_user_info(self.jogador.nome)
 
         title = tk.Label(self.current_frame, text="Ranking", font=("Arial", 24))
         title.pack(pady=20)
@@ -280,8 +340,10 @@ class Quiz():
                 tk.Label(row_frame, text=str(value), font=("Arial", 12),
                          width=15).grid(row=0, column=j, padx=5)
 
-        tk.Button(self.current_frame, text="Voltar", font=("Arial", 16),
-                  command=self.show_login_frame).pack(pady=20)
+        # Botão para voltar ao menu principal em vez da tela de login
+        tk.Button(self.current_frame, text="Voltar ao Menu", font=("Arial", 16),
+                  command=self.show_main_menu if self.jogador else self.show_login_frame).pack(pady=20)
+
 
     def criar_bd(self):
         """Cria o banco de dados e as tabelas necessárias."""
