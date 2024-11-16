@@ -192,6 +192,22 @@ class Quiz():
         self.current_question += 1
         self.show_question()
 
+    def end_game(self):
+        end_time = time.time()
+        total_time = round(end_time - self.start_time, 2)
+
+        # Save result
+        conn = sqlite3.connect('quiz.db')
+        cursor = conn.cursor()
+        cursor.execute('''INSERT INTO resultados (jogador_id, tempo, acertos, nome) 
+                         VALUES (?, ?, ?, ?)''',
+                       (None if self.jogador.nome == "Convidado" else 1,
+                        total_time, self.correct_answers, self.jogador.nome))
+        conn.commit()
+        conn.close()
+
+        self.show_results(total_time)
+
     def criar_bd(self):
         conn = sqlite3.connect('quiz.db')
         c = conn.cursor()
