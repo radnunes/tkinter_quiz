@@ -101,7 +101,22 @@ class Quiz():
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao registrar: {str(e)}")
 
+    def handle_login(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
 
+        conn = sqlite3.connect('quiz.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM jogadores WHERE username = ? AND password = ?',
+                       (username, password))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user:
+            self.jogador = Jogador(nome=username)
+            self.show_difficulty_selection()
+        else:
+            messagebox.showerror("Erro", "Credenciais inválidas!")
 
     def criar_bd(self):
         conn = sqlite3.connect('quiz.db')
