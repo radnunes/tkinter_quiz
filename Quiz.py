@@ -5,15 +5,18 @@ from Jogador import Jogador
 
 class Quiz():
 
-    perguntas_total = None
-    perguntas_selecionadas = None
-
-
     def __init__(self, root):
         self.root = root
         self.root.title('Quiz!')
-        self.tela_inicial()
+        self.current_frame = None
+        self.jogador = None
+        self.questions = []
+        self.current_question = 0
+        self.correct_answers = 0
+        self.start_time = None
+        self.selected_difficulty = None
         self.criar_bd()
+        self.show_login_frame()
 
     def tela_inicial(self):
         self.root.grid_columnconfigure(0, weight=1)
@@ -41,11 +44,16 @@ class Quiz():
         login_button = tk.Button(self.root, text="Login", font=("Arial", 16))
         login_button.grid(row=3, column=2, padx=10, pady=10)
 
-        guest_button = tk.Button(self.root, text="Guest", font=("Arial", 16))
+        guest_button = tk.Button(self.root, text="Registar", font=("Arial", 16))
         guest_button.grid(row=3, column=3, padx=10, pady=10)
 
-        leaderboard_button = tk.Button(self.root, text="Leaderboard", font=("Arial", 16))
-        leaderboard_button.grid(row=4, column=1, columnspan=4, pady=10)
+        login_button = tk.Button(self.root, text="Convidado", font=("Arial", 16))
+        login_button.grid(row=4, column=2, padx=10, pady=10)
+
+        guest_button = tk.Button(self.root, text="Ranking", font=("Arial", 16))
+        guest_button.grid(row=4, column=3, padx=10, pady=10)
+
+
 
     def criar_bd(self):
         conn = sqlite3.connect('quiz.db')
@@ -83,6 +91,7 @@ class Quiz():
         conn.commit()
         conn.close()
         print('BD criada com sucesso')
+
         # Carregar perguntas do CSV
         Quiz.carregar_perguntas(self)
 
@@ -112,3 +121,5 @@ class Quiz():
         finally:
             conn.close()
 
+    def guest(self):
+        return Jogador(self.root, self.perguntas_selecionadas)
