@@ -122,6 +122,23 @@ class Quiz():
         self.jogador = Jogador()
         self.show_difficulty_selection()
 
+    def show_difficulty_selection(self):
+        self.clear_frame()
+
+        title_label = tk.Label(self.current_frame, text="Selecione a Dificuldade", font=("Arial", 24))
+        title_label.pack(pady=20)
+
+        difficulties = [
+            ("Fácil - 10 perguntas", 10),
+            ("Médio - 20 perguntas", 20),
+            ("Difícil - 50 perguntas", 50),
+            ("Extremo - 100 perguntas", 100)
+        ]
+
+        for text, num in difficulties:
+            tk.Button(self.current_frame, text=text, font=("Arial", 16),
+                      command=lambda n=num: self.start_game(n)).pack(pady=10)
+
     def criar_bd(self):
         conn = sqlite3.connect('quiz.db')
         c = conn.cursor()
