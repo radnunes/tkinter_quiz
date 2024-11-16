@@ -118,6 +118,10 @@ class Quiz():
         else:
             messagebox.showerror("Erro", "Credenciais inválidas!")
 
+    def play_as_guest(self):
+        self.jogador = Jogador()
+        self.show_difficulty_selection()
+
     def criar_bd(self):
         conn = sqlite3.connect('quiz.db')
         c = conn.cursor()
