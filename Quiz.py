@@ -311,7 +311,7 @@ class Quiz():
         cursor = conn.cursor()
 
         try:
-            with open('new_questions.csv', newline='', encoding='utf-8') as csvfile:
+            with open('quiz-questions.csv', newline='', encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
                     cursor.execute('''
