@@ -208,6 +208,30 @@ class Quiz():
 
         self.show_results(total_time)
 
+    def show_results(self, total_time):
+        self.clear_frame()
+
+        title = tk.Label(self.current_frame, text="Resultados", font=("Arial", 24))
+        title.pack(pady=20)
+
+        results = [
+            f"Jogador: {self.jogador.nome}",
+            f"Dificuldade: {self.selected_difficulty} perguntas",
+            f"Respostas corretas: {self.correct_answers}/{self.selected_difficulty}",
+            f"Porcentagem de acerto: {(self.correct_answers / self.selected_difficulty) * 100:.1f}%",
+            f"Tempo total: {total_time:.1f} segundos"
+        ]
+
+        for result in results:
+            tk.Label(self.current_frame, text=result, font=("Arial", 14)).pack(pady=5)
+
+        tk.Button(self.current_frame, text="Ver Ranking", font=("Arial", 16),
+                  command=self.show_leaderboard).pack(pady=10)
+        tk.Button(self.current_frame, text="Jogar Novamente", font=("Arial", 16),
+                  command=self.show_difficulty_selection).pack(pady=10)
+        tk.Button(self.current_frame, text="Menu Principal", font=("Arial", 16),
+                  command=self.show_login_frame).pack(pady=10)
+
     def criar_bd(self):
         conn = sqlite3.connect('quiz.db')
         c = conn.cursor()
