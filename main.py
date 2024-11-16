@@ -4,6 +4,6 @@ from Quiz import Quiz
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.geometry('500x500')
+    root.geometry('750x500')
     quiz_app = Quiz(root)
     root.mainloop()
