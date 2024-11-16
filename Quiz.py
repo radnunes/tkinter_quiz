@@ -18,40 +18,36 @@ class Quiz():
         self.criar_bd()
         self.show_login_frame()
 
-    def tela_inicial(self):
-        self.root.grid_columnconfigure(0, weight=1)
-        self.root.grid_columnconfigure(1, weight=1)
-        self.root.grid_columnconfigure(2, weight=1)
-        self.root.grid_columnconfigure(3, weight=1)
-        self.root.grid_columnconfigure(4, weight=1)
-        self.root.grid_columnconfigure(5, weight=1)
+    def clear_frame(self):
+        if self.current_frame:
+            self.current_frame.destroy()
+        self.current_frame = tk.Frame(self.root)
+        self.current_frame.pack(fill='both', expand=True)
 
-        title_label = tk.Label(self.root, text="Bem-Vindos ao Quiz!", font=("Arial", 24))
-        title_label.grid(row=0, column=1, columnspan=4, pady=20)
+    def show_login_frame(self):
+        self.clear_frame()
 
-        username_label = tk.Label(self.root, text="Nome:", font=("Arial",12))
-        username_label.grid(row=1, column=2, pady=10)
+        title_label = tk.Label(self.current_frame, text="Bem-Vindos ao Quiz!", font=("Arial", 24))
+        title_label.pack(pady=20)
 
-        password_label = tk.Label(self.root, text="Senha:", font=("Arial", 12))
-        password_label.grid(row=2, column=2, pady=10)
+        # Login fields
+        tk.Label(self.current_frame, text="Nome:", font=("Arial", 12)).pack(pady=5)
+        self.username_entry = tk.Entry(self.current_frame)
+        self.username_entry.pack(pady=5)
 
-        username_entry = tk.Entry(self.root)
-        username_entry.grid(row=1, column=3, pady=10)
+        tk.Label(self.current_frame, text="Senha:", font=("Arial", 12)).pack(pady=5)
+        self.password_entry = tk.Entry(self.current_frame, show="*")
+        self.password_entry.pack(pady=5)
 
-        password_entry = tk.Entry(self.root)
-        password_entry.grid(row=2, column=3, pady=10)
-
-        login_button = tk.Button(self.root, text="Login", font=("Arial", 16))
-        login_button.grid(row=3, column=2, padx=10, pady=10)
-
-        guest_button = tk.Button(self.root, text="Registar", font=("Arial", 16))
-        guest_button.grid(row=3, column=3, padx=10, pady=10)
-
-        login_button = tk.Button(self.root, text="Convidado", font=("Arial", 16))
-        login_button.grid(row=4, column=2, padx=10, pady=10)
-
-        guest_button = tk.Button(self.root, text="Ranking", font=("Arial", 16))
-        guest_button.grid(row=4, column=3, padx=10, pady=10)
+        # Buttons
+        tk.Button(self.current_frame, text="Login", font=("Arial", 16),
+                  command=self.handle_login).pack(pady=10)
+        tk.Button(self.current_frame, text="Registar", font=("Arial", 16),
+                  command=self.show_register_frame).pack(pady=10)
+        tk.Button(self.current_frame, text="Convidado", font=("Arial", 16),
+                  command=self.play_as_guest).pack(pady=10)
+        tk.Button(self.current_frame, text="Ranking", font=("Arial", 16),
+                  command=self.show_leaderboard).pack(pady=10)
 
 
 
