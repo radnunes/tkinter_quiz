@@ -49,6 +49,29 @@ class Quiz():
         tk.Button(self.current_frame, text="Ranking", font=("Arial", 16),
                   command=self.show_leaderboard).pack(pady=10)
 
+    def show_register_frame(self):
+        self.clear_frame()
+
+        title_label = tk.Label(self.current_frame, text="Registar Nova Conta", font=("Arial", 24))
+        title_label.pack(pady=20)
+
+        tk.Label(self.current_frame, text="Nome:", font=("Arial", 12)).pack(pady=5)
+        self.reg_username = tk.Entry(self.current_frame)
+        self.reg_username.pack(pady=5)
+
+        tk.Label(self.current_frame, text="Senha:", font=("Arial", 12)).pack(pady=5)
+        self.reg_password = tk.Entry(self.current_frame, show="*")
+        self.reg_password.pack(pady=5)
+
+        tk.Label(self.current_frame, text="Confirmar Senha:", font=("Arial", 12)).pack(pady=5)
+        self.reg_confirm = tk.Entry(self.current_frame, show="*")
+        self.reg_confirm.pack(pady=5)
+
+        tk.Button(self.current_frame, text="Registar", font=("Arial", 16),
+                  command=self.handle_register).pack(pady=10)
+        tk.Button(self.current_frame, text="Voltar", font=("Arial", 16),
+                  command=self.show_login_frame).pack(pady=10)
+
 
 
     def criar_bd(self):
