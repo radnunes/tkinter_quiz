@@ -155,6 +155,31 @@ class Quiz():
 
         self.show_question()
 
+    def show_question(self):
+        self.clear_frame()
+
+        if self.current_question >= len(self.questions):
+            self.end_game()
+            return
+
+        question = self.questions[self.current_question]
+
+        # Question counter
+        counter_label = tk.Label(self.current_frame,
+                                 text=f"Pergunta {self.current_question + 1} de {len(self.questions)}",
+                                 font=("Arial", 12))
+        counter_label.pack(pady=10)
+
+        # Question text
+        question_label = tk.Label(self.current_frame, text=question[1], font=("Arial", 16))
+        question_label.pack(pady=20)
+
+        # Answer buttons
+        for i in range(4):
+            btn = tk.Button(self.current_frame, text=question[i + 2], font=("Arial", 12),
+                            command=lambda ans=i: self.check_answer(ans))
+            btn.pack(pady=5)
+
     def criar_bd(self):
         conn = sqlite3.connect('quiz.db')
         c = conn.cursor()
