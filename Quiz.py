@@ -180,6 +180,18 @@ class Quiz():
                             command=lambda ans=i: self.check_answer(ans))
             btn.pack(pady=5)
 
+    def check_answer(self, answer):
+        correct = self.questions[self.current_question][6]
+        if answer == correct:
+            self.correct_answers += 1
+            messagebox.showinfo("Correto!", "Resposta correta!")
+        else:
+            messagebox.showinfo("Incorreto!",
+                                f"Resposta incorreta! A resposta correta era: {self.questions[self.current_question][correct + 2]}")
+
+        self.current_question += 1
+        self.show_question()
+
     def criar_bd(self):
         conn = sqlite3.connect('quiz.db')
         c = conn.cursor()
