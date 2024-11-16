@@ -1,5 +1,6 @@
 import csv
 import sqlite3
+import time
 import tkinter as tk
 from tkinter import messagebox
 
@@ -138,6 +139,21 @@ class Quiz():
         for text, num in difficulties:
             tk.Button(self.current_frame, text=text, font=("Arial", 16),
                       command=lambda n=num: self.start_game(n)).pack(pady=10)
+
+    def start_game(self, num_questions):
+        self.selected_difficulty = num_questions
+        self.correct_answers = 0
+        self.current_question = 0
+        self.start_time = time.time()
+
+        # Get random questions from database
+        conn = sqlite3.connect('quiz.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM perguntas ORDER BY RANDOM() LIMIT ?', (num_questions,))
+        self.questions = cursor.fetchall()
+        conn.close()
+
+        self.show_question()
 
     def criar_bd(self):
         conn = sqlite3.connect('quiz.db')
