@@ -1,5 +1,4 @@
 import tkinter as tk
-from Jogador import Jogador
 from Quiz import Quiz
 
 if __name__ == '__main__':

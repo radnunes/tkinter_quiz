@@ -10,30 +10,32 @@ class Quiz():
 
     def __init__(self, root):
         self.root = root
-        self.root.title('Quiz!')
+        self.root.title('Quiz!')  # Define o título da janela
         self.current_frame = None
         self.jogador = None
-        self.questions = []
-        self.current_question = 0
-        self.correct_answers = 0
-        self.start_time = None
-        self.selected_difficulty = None
-        self.criar_bd()
-        self.show_login_frame()
+        self.questions = []  # Lista para armazenar as perguntas
+        self.current_question = 0  # Contador da pergunta atual
+        self.correct_answers = 0  # Contador de respostas corretas
+        self.start_time = None  # Hora de início do jogo
+        self.selected_difficulty = None  # Dificuldade selecionada
+        self.criar_bd()  # Criação do banco de dados
+        self.show_login_frame()  # Exibe a tela de login
 
     def clear_frame(self):
+        """Limpa a tela atual."""
         if self.current_frame:
             self.current_frame.destroy()
         self.current_frame = tk.Frame(self.root)
         self.current_frame.pack(fill='both', expand=True)
 
     def show_login_frame(self):
+        """Exibe a tela de login."""
         self.clear_frame()
 
         title_label = tk.Label(self.current_frame, text="Bem-Vindos ao Quiz!", font=("Arial", 24))
         title_label.pack(pady=20)
 
-        # Login fields
+        # Campos de login
         tk.Label(self.current_frame, text="Nome:", font=("Arial", 12)).pack(pady=5)
         self.username_entry = tk.Entry(self.current_frame)
         self.username_entry.pack(pady=5)
@@ -42,7 +44,7 @@ class Quiz():
         self.password_entry = tk.Entry(self.current_frame, show="*")
         self.password_entry.pack(pady=5)
 
-        # Buttons
+        # Botões de ação
         tk.Button(self.current_frame, text="Login", font=("Arial", 16),
                   command=self.handle_login).pack(pady=10)
         tk.Button(self.current_frame, text="Registar", font=("Arial", 16),
@@ -53,11 +55,13 @@ class Quiz():
                   command=self.show_leaderboard).pack(pady=10)
 
     def show_register_frame(self):
+        """Exibe a tela de registo de nova conta."""
         self.clear_frame()
 
         title_label = tk.Label(self.current_frame, text="Registar Nova Conta", font=("Arial", 24))
         title_label.pack(pady=20)
 
+        # Campos de registo
         tk.Label(self.current_frame, text="Nome:", font=("Arial", 12)).pack(pady=5)
         self.reg_username = tk.Entry(self.current_frame)
         self.reg_username.pack(pady=5)
@@ -76,6 +80,7 @@ class Quiz():
                   command=self.show_login_frame).pack(pady=10)
 
     def handle_register(self):
+        """Lida com o registo de uma nova conta."""
         username = self.reg_username.get()
         password = self.reg_password.get()
         confirm = self.reg_confirm.get()
@@ -103,6 +108,7 @@ class Quiz():
             messagebox.showerror("Erro", f"Erro ao registrar: {str(e)}")
 
     def handle_login(self):
+        """Lida com o processo de login."""
         username = self.username_entry.get()
         password = self.password_entry.get()
 
@@ -114,21 +120,24 @@ class Quiz():
         conn.close()
 
         if user:
-            self.jogador = Jogador(nome=username)
+            self.jogador = Jogador(nome=username)  # Cria o jogador
             self.show_difficulty_selection()
         else:
             messagebox.showerror("Erro", "Credenciais inválidas!")
 
     def play_as_guest(self):
-        self.jogador = Jogador()
+        """Permite ao jogador jogar como convidado."""
+        self.jogador = Jogador()  # Cria o jogador como convidado
         self.show_difficulty_selection()
 
     def show_difficulty_selection(self):
+        """Exibe a tela de seleção de dificuldade."""
         self.clear_frame()
 
         title_label = tk.Label(self.current_frame, text="Selecione a Dificuldade", font=("Arial", 24))
         title_label.pack(pady=20)
 
+        # Opções de dificuldade
         difficulties = [
             ("Fácil - 10 perguntas", 10),
             ("Médio - 20 perguntas", 20),
@@ -136,17 +145,19 @@ class Quiz():
             ("Extremo - 100 perguntas", 100)
         ]
 
+        # Botões para escolher a dificuldade
         for text, num in difficulties:
             tk.Button(self.current_frame, text=text, font=("Arial", 16),
                       command=lambda n=num: self.start_game(n)).pack(pady=10)
 
     def start_game(self, num_questions):
+        """Inicia o jogo com o número de perguntas selecionadas."""
         self.selected_difficulty = num_questions
         self.correct_answers = 0
         self.current_question = 0
         self.start_time = time.time()
 
-        # Get random questions from database
+        # Obtém perguntas aleatórias do banco de dados
         conn = sqlite3.connect('quiz.db')
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM perguntas ORDER BY RANDOM() LIMIT ?', (num_questions,))
@@ -156,31 +167,33 @@ class Quiz():
         self.show_question()
 
     def show_question(self):
+        """Exibe a pergunta atual."""
         self.clear_frame()
 
         if self.current_question >= len(self.questions):
-            self.end_game()
+            self.end_game()  # Termina o jogo se todas as perguntas forem respondidas
             return
 
         question = self.questions[self.current_question]
 
-        # Question counter
+        # Contador de perguntas
         counter_label = tk.Label(self.current_frame,
                                  text=f"Pergunta {self.current_question + 1} de {len(self.questions)}",
                                  font=("Arial", 12))
         counter_label.pack(pady=10)
 
-        # Question text
+        # Exibe o texto da pergunta
         question_label = tk.Label(self.current_frame, text=question[1], font=("Arial", 16))
         question_label.pack(pady=20)
 
-        # Answer buttons
+        # Botões para responder à pergunta
         for i in range(4):
             btn = tk.Button(self.current_frame, text=question[i + 2], font=("Arial", 12),
                             command=lambda ans=i: self.check_answer(ans))
             btn.pack(pady=5)
 
     def check_answer(self, answer):
+        """Verifica se a resposta está correta."""
         correct = self.questions[self.current_question][6]
         if answer == correct:
             self.correct_answers += 1
@@ -193,22 +206,24 @@ class Quiz():
         self.show_question()
 
     def end_game(self):
+        """Termina o jogo e exibe os resultados."""
         end_time = time.time()
         total_time = round(end_time - self.start_time, 2)
 
-        # Save result
+        # Salva o resultado no banco de dados, incluindo a dificuldade
         conn = sqlite3.connect('quiz.db')
         cursor = conn.cursor()
-        cursor.execute('''INSERT INTO resultados (jogador_id, tempo, acertos, nome) 
-                         VALUES (?, ?, ?, ?)''',
+        cursor.execute('''INSERT INTO resultados (jogador_id, tempo, acertos, nome, dificuldade) 
+                         VALUES (?, ?, ?, ?, ?)''',
                        (None if self.jogador.nome == "Convidado" else 1,
-                        total_time, self.correct_answers, self.jogador.nome))
+                        total_time, self.correct_answers, self.jogador.nome, self.selected_difficulty))
         conn.commit()
         conn.close()
 
         self.show_results(total_time)
 
     def show_results(self, total_time):
+        """Exibe os resultados finais do jogo."""
         self.clear_frame()
 
         title = tk.Label(self.current_frame, text="Resultados", font=("Arial", 24))
@@ -225,6 +240,7 @@ class Quiz():
         for result in results:
             tk.Label(self.current_frame, text=result, font=("Arial", 14)).pack(pady=5)
 
+        # Botões para navegar para outras opções
         tk.Button(self.current_frame, text="Ver Ranking", font=("Arial", 16),
                   command=self.show_leaderboard).pack(pady=10)
         tk.Button(self.current_frame, text="Jogar Novamente", font=("Arial", 16),
@@ -233,6 +249,7 @@ class Quiz():
                   command=self.show_login_frame).pack(pady=10)
 
     def show_leaderboard(self):
+        """Exibe o ranking dos melhores jogadores."""
         self.clear_frame()
 
         title = tk.Label(self.current_frame, text="Ranking", font=("Arial", 24))
@@ -240,22 +257,22 @@ class Quiz():
 
         conn = sqlite3.connect('quiz.db')
         cursor = conn.cursor()
-        cursor.execute('''SELECT nome, acertos, tempo 
+        cursor.execute('''SELECT nome, acertos, tempo, dificuldade 
                          FROM resultados 
                          ORDER BY acertos DESC, tempo ASC 
                          LIMIT 10''')
         results = cursor.fetchall()
         conn.close()
 
-        # Headers
-        headers = ["Jogador", "Acertos", "Tempo (s)"]
+        # Cabeçalhos
+        headers = ["Jogador", "Acertos", "Tempo (s)", "Dificuldade"]
         header_frame = tk.Frame(self.current_frame)
         header_frame.pack(pady=10)
         for i, header in enumerate(headers):
             tk.Label(header_frame, text=header, font=("Arial", 12, "bold"),
                      width=15).grid(row=0, column=i, padx=5)
 
-        # Results
+        # Resultados
         for i, result in enumerate(results, 1):
             row_frame = tk.Frame(self.current_frame)
             row_frame.pack(pady=2)
@@ -267,6 +284,7 @@ class Quiz():
                   command=self.show_login_frame).pack(pady=20)
 
     def criar_bd(self):
+        """Cria o banco de dados e as tabelas necessárias."""
         conn = sqlite3.connect('quiz.db')
         c = conn.cursor()
 
@@ -274,7 +292,7 @@ class Quiz():
         c.execute('DROP TABLE IF EXISTS jogadores')
         c.execute('DROP TABLE IF EXISTS resultados')
 
-        # Tabela de perguntas
+        # Criação da tabela de perguntas
         c.execute('''CREATE TABLE IF NOT EXISTS perguntas (
                         id INTEGER PRIMARY KEY,
                         pergunta TEXT,
@@ -284,29 +302,31 @@ class Quiz():
                         opcao4 TEXT,
                         correta INTEGER)''')
 
-        # Tabela de jogadores
+        # Criação da tabela de jogadores
         c.execute('''CREATE TABLE IF NOT EXISTS jogadores (
                         id INTEGER PRIMARY KEY,
                         username TEXT UNIQUE,
                         password TEXT)''')
 
-        # Tabela de resultados
+        # Criação da tabela de resultados, incluindo a coluna 'dificuldade'
         c.execute('''CREATE TABLE IF NOT EXISTS resultados (
                         id INTEGER PRIMARY KEY,
                         jogador_id INTEGER,
                         tempo REAL,
                         acertos INTEGER,
                         nome TEXT,
+                        dificuldade INTEGER,
                         FOREIGN KEY(jogador_id) REFERENCES jogadores(id))''')
 
         conn.commit()
         conn.close()
         print('BD criada com sucesso')
 
-        # Carregar perguntas do CSV
+        # Carregar perguntas a partir de um arquivo CSV
         Quiz.carregar_perguntas(self)
 
     def carregar_perguntas(self):
+        """Carrega as perguntas do arquivo CSV para o banco de dados."""
         conn = sqlite3.connect('quiz.db')
         cursor = conn.cursor()
 
@@ -333,4 +353,5 @@ class Quiz():
             conn.close()
 
     def guest(self):
+        """Retorna um jogador convidado."""
         return Jogador(self.root, self.perguntas_selecionadas)
