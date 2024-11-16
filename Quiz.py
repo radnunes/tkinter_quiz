@@ -1,6 +1,8 @@
 import csv
 import sqlite3
 import tkinter as tk
+from tkinter import messagebox
+
 from Jogador import Jogador
 
 class Quiz():
@@ -71,6 +73,33 @@ class Quiz():
                   command=self.handle_register).pack(pady=10)
         tk.Button(self.current_frame, text="Voltar", font=("Arial", 16),
                   command=self.show_login_frame).pack(pady=10)
+
+    def handle_register(self):
+        username = self.reg_username.get()
+        password = self.reg_password.get()
+        confirm = self.reg_confirm.get()
+
+        if not all([username, password, confirm]):
+            messagebox.showerror("Erro", "Todos os campos são obrigatórios!")
+            return
+
+        if password != confirm:
+            messagebox.showerror("Erro", "As senhas não coincidem!")
+            return
+
+        try:
+            conn = sqlite3.connect('quiz.db')
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO jogadores (username, password) VALUES (?, ?)',
+                           (username, password))
+            conn.commit()
+            conn.close()
+            messagebox.showinfo("Sucesso", "Conta criada com sucesso!")
+            self.show_login_frame()
+        except sqlite3.IntegrityError:
+            messagebox.showerror("Erro", "Nome de usuário já existe!")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao registrar: {str(e)}")
 
 
 
